@@ -411,7 +411,7 @@
 
         <div id="customerModal" class="modal">
             <div class="modal-content">
-                <span class="close" onclick="closeModal()">&times;</span>
+                <span class="close" onclick="closeModal()">×</span>
                 <div id="customerDetail">
                     <!-- 여기에 고객 상세 정보가 표시됩니다 -->
                 </div>
@@ -421,15 +421,15 @@
 
     <script>
         const CORRECT_PASSWORD = 'aplcolor1!';
-        const API_BASE_URL = 'https://cust-info-check.apls.kr';  // Cloudflare 터널 주소로 변경       
-        
+        const API_BASE_URL = 'https://cust-info-check.apls.kr';  // Cloudflare 터널 주소로 변경
+
         // 비밀번호 체크 함수
         function checkPassword() {
             const password = document.getElementById('passwordInput').value;
             const loginScreen = document.getElementById('loginScreen');
             const mainContent = document.getElementById('mainContent');
             const errorMessage = document.getElementById('errorMessage');
-            
+
             if (password === CORRECT_PASSWORD) {
                 loginScreen.style.display = 'none';
                 mainContent.style.display = 'block';
@@ -469,7 +469,7 @@
             document.querySelectorAll('.staff-button').forEach(button => {
                 button.classList.remove('active');
             });
-            
+
             // 선택된 버튼에 active 클래스 추가
             const selectedButton = Array.from(document.querySelectorAll('.staff-button'))
                 .find(button => button.textContent === (staffName || '전체'));
@@ -483,32 +483,41 @@
 
         async function fetchCustomerData(staffOverride) {
             const date = document.getElementById('date').value;
-            const staff = staffOverride !== undefined ? staffOverride : 
-                         Array.from(document.querySelectorAll('.staff-button'))
-                             .find(button => button.classList.contains('active'))
-                             ?.textContent.replace('전체', '') || '';
-            
+            const staff = staffOverride !== undefined ? staffOverride :
+                Array.from(document.querySelectorAll('.staff-button'))
+                    .find(button => button.classList.contains('active'))
+                    ?.textContent.replace('전체', '') || '';
+
             const requestData = {
                 date: date,
                 staff: staff
             };
             console.log('Sending request:', requestData);
-            
+
             try {
+                console.log('fetch() 호출 전');  // 추가
+
                 const response = await fetch(`${API_BASE_URL}/get_customer_info`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Accept': 'application/json'  // 추가
                     },
                     body: JSON.stringify(requestData)
                 });
 
-                console.log('Response status:', response.status);
-                console.log('Response headers:', response.headers);
+                console.log('fetch() 호출 후, response:', response);  // 추가
+                console.log('Response status:', response.status);  // 추가
+                console.log('Response statusText:', response.statusText);  // 추가
 
                 if (!response.ok) {
-                    const errorText = await response.text();
+                    let errorText;
+                    try {
+                        const errorData = await response.json();
+                        errorText = errorData.message || JSON.stringify(errorData);
+                    } catch (jsonError) {
+                        errorText = await response.text();
+                    }
                     console.error('Error response:', errorText);
                     throw new Error(`Network response was not ok: ${response.status} ${errorText}`);
                 }
@@ -573,7 +582,7 @@
         function displayCustomerDetail(customer, date) {
             const modal = document.getElementById('customerModal');
             const customerDetail = document.getElementById('customerDetail');
-            
+
             customerDetail.innerHTML = `
                 <div class="info-section">
                     <div class="info-section-title">
@@ -655,7 +664,7 @@
                     </div>
                 </div>
             `;
-            
+
             modal.style.display = 'block';
         }
 
