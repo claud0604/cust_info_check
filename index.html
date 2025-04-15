@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APL COLOR 고객 정보 시스템</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #b9868c;
+            --secondary: #0a6666;
+            --tertiary: #cdbca9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--secondary), var(--primary));
+            color: white;
+            padding: 20px 0;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin: 0;
+        }
+
+        .header-subtitle {
+            color: var(--tertiary);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .search-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .search-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .search-group label {
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .date-navigation {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-button {
+            background: none;
+            border: none;
+            color: var(--secondary);
+            cursor: pointer;
+            padding: 5px;
+            font-size: 1.2em;
+            transition: color 0.3s;
+        }
+
+        .nav-button:hover {
+            color: var(--primary);
+        }
+
+        .staff-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .staff-button {
+            background-color: white;
+            border: 2px solid var(--tertiary);
+            color: var(--secondary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .staff-button.active {
+            background-color: var(--tertiary);
+            border-color: var(--secondary);
+            color: var(--secondary);
+            font-weight: bold;
+        }
+
+        .staff-button:hover {
+            background-color: var(--tertiary);
+            transform: translateY(-2px);
+        }
+
+        input[type="date"] {
+            padding: 8px;
+            border: 1px solid var(--tertiary);
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        select {
+            min-width: 120px;
+        }
+
+        .customer-list {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .list-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: var(--secondary);
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .list-title i {
+            font-size: 1.1em;
+        }
+
+        .time-slot {
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            margin: 10px 0;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .time-slot:hover {
+            background-color: #f8f8f8;
+            transform: translateX(5px);
+        }
+
+        .time-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .time-info strong {
+            font-size: 1.1em;
+            color: #333;
+        }
+
+        .service-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--secondary);
+        }
+
+        .service-name {
+            font-size: 0.9em;
+        }
+
+        .staff-name {
+            color: var(--secondary);
+            background-color: var(--tertiary);
+            padding: 2px 8px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 0 5px;
+            z-index: 1;
+        }
+
+        #customerDetail {
+            margin-top: 20px;
+        }
+
+        .info-section {
+            margin-bottom: 20px;
+        }
+
+        .info-section-title {
+            color: var(--secondary);
+            font-size: 1.1em;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid var(--tertiary);
+        }
+
+        .info-item {
+            padding: 8px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .info-label {
+            color: var(--primary);
+            min-width: 100px;
+            font-weight: bold;
+        }
+
+        /* 로그인 화면 스타일 */
+        .login-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-box h2 {
+            color: var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid var(--tertiary);
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        .login-box button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .login-box button:hover {
+            background-color: var(--primary);
+        }
+
+        .error-message {
+            color: #ff4444;
+            margin-top: 10px;
+            font-size: 0.9em;
+            display: none;
+        }
+
+        .main-content {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .search-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-group {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="loginScreen" class="login-container">
+        <div class="login-box">
+            <h2>APL COLOR</h2>
+            <p style="color: #666; margin-bottom: 20px;">고객 정보 시스템</p>
+            <input type="password" id="passwordInput" placeholder="비밀번호를 입력하세요">
+            <button onclick="checkPassword()">로그인</button>
+            <p id="errorMessage" class="error-message">비밀번호가 올바르지 않습니다.</p>
+        </div>
+    </div>
+
+    <div id="mainContent" class="main-content">
+        <div class="header">
+            <div class="header-content">
+                <div>
+                    <h1>APL COLOR</h1>
+                    <div class="header-subtitle">고객 정보 시스템</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="search-section">
+                <div class="search-group">
+                    <label for="date">날짜:</label>
+                    <div class="date-navigation">
+                        <button class="nav-button" onclick="moveDate(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <input type="date" id="date" onchange="fetchCustomerData()">
+                        <button class="nav-button" onclick="moveDate(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="search-group">
+                    <label>담당자:</label>
+                    <div class="staff-buttons">
+                        <button class="staff-button active" onclick="selectStaff('')">전체</button>
+                        <button class="staff-button" onclick="selectStaff('경은')">경은</button>
+                        <button class="staff-button" onclick="selectStaff('예지')">예지</button>
+                        <button class="staff-button" onclick="selectStaff('현지')">현지</button>
+                    </div>
+                </div>
+            </div>
+            <div id="customerList" class="customer-list">
+                <div class="list-title">
+                    <i class="fas fa-list"></i> 예약 고객 목록
+                </div>
+                <!-- 여기에 예약 목록이 표시됩니다 -->
+            </div>
+        </div>
+
+        <div id="customerModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal()">&times;</span>
+                <div id="customerDetail">
+                    <!-- 여기에 고객 상세 정보가 표시됩니다 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CORRECT_PASSWORD = 'aplcolor1!';
+        
+        // 비밀번호 체크 함수
+        function checkPassword() {
+            const password = document.getElementById('passwordInput').value;
+            const loginScreen = document.getElementById('loginScreen');
+            const mainContent = document.getElementById('mainContent');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (password === CORRECT_PASSWORD) {
+                loginScreen.style.display = 'none';
+                mainContent.style.display = 'block';
+                // 로그인 성공 후 초기 데이터 로드
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('date').value = today;
+                fetchCustomerData();
+            } else {
+                errorMessage.style.display = 'block';
+                document.getElementById('passwordInput').value = '';
+            }
+        }
+
+        // Enter 키로 로그인
+        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
+
+        // 기존 DOMContentLoaded 이벤트 수정
+        document.addEventListener('DOMContentLoaded', function() {
+            // 페이지 로드 시 비밀번호 입력 필드에 포커스
+            document.getElementById('passwordInput').focus();
+        });
+
+        function moveDate(days) {
+            const dateInput = document.getElementById('date');
+            const currentDate = new Date(dateInput.value);
+            currentDate.setDate(currentDate.getDate() + days);
+            dateInput.value = currentDate.toISOString().split('T')[0];
+            fetchCustomerData();
+        }
+
+        function selectStaff(staffName) {
+            // 모든 버튼에서 active 클래스 제거
+            document.querySelectorAll('.staff-button').forEach(button => {
+                button.classList.remove('active');
+            });
+            
+            // 선택된 버튼에 active 클래스 추가
+            const selectedButton = Array.from(document.querySelectorAll('.staff-button'))
+                .find(button => button.textContent === (staffName || '전체'));
+            if (selectedButton) {
+                selectedButton.classList.add('active');
+            }
+
+            // 데이터 새로 불러오기
+            fetchCustomerData(staffName);
+        }
+
+        async function fetchCustomerData(staffOverride) {
+            const date = document.getElementById('date').value;
+            const staff = staffOverride !== undefined ? staffOverride : 
+                         Array.from(document.querySelectorAll('.staff-button'))
+                             .find(button => button.classList.contains('active'))
+                             ?.textContent.replace('전체', '') || '';
+            
+            try {
+                const response = await fetch('/get_customer_info', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        date: date,
+                        staff: staff
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+                displayCustomerList(data, date);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('데이터를 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        function displayCustomerList(customers, date) {
+            const customerList = document.getElementById('customerList');
+            customerList.innerHTML = '<div class="list-title"><i class="fas fa-list"></i> 예약 고객 목록</div>';
+
+            if (customers.length === 0) {
+                customerList.innerHTML += '<p style="text-align: center; color: #666;">예약된 고객이 없습니다.</p>';
+                return;
+            }
+
+            customers.forEach(customer => {
+                const customerElement = document.createElement('div');
+                customerElement.className = 'time-slot';
+                customerElement.onclick = () => showCustomerInfo(customer, date);
+                customerElement.innerHTML = `
+                    <div class="time-info">
+                        <strong>${customer.reservation_time}</strong>
+                        <span>${customer.customer_name}</span>
+                    </div>
+                    <div class="service-info">
+                        <span class="service-name">${customer.service_name}</span>
+                        <span class="staff-name">${customer.staff}</span>
+                    </div>
+                `;
+                customerList.appendChild(customerElement);
+            });
+        }
+
+        function showCustomerInfo(customer, date) {
+            const modal = document.getElementById('customerModal');
+            const customerDetail = document.getElementById('customerDetail');
+            
+            customerDetail.innerHTML = `
+                <div class="info-section">
+                    <div class="info-section-title">
+                        <i class="fas fa-calendar-check"></i> 진단 예약 정보
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">날짜:</span>
+                        <span>${date}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">시간:</span>
+                        <span>${customer.reservation_time}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">상품:</span>
+                        <span>${customer.service_name}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">담당자:</span>
+                        <span>${customer.staff}</span>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-section-title">
+                        <i class="fas fa-user"></i> 고객 정보
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">성함:</span>
+                        <span>${customer.customer_name}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">성별:</span>
+                        <span>${customer.gender}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">나이:</span>
+                        <span>${customer.age}세</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">연락처:</span>
+                        <span>${customer.phone}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">직업:</span>
+                        <span>${customer.job}</span>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-section-title">
+                        <i class="fas fa-ruler"></i> 신체 정보
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">키:</span>
+                        <span>${customer.height}cm</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">체중:</span>
+                        <span>${customer.weight}kg</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">의류 사이즈:</span>
+                        <span>${customer.clothing_size}</span>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-section-title">
+                        <i class="fas fa-comments"></i> 상담 정보
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">의뢰 이유:</span>
+                        <span>${customer.reason}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">선호 스타일:</span>
+                        <span>${customer.style_preference}</span>
+                    </div>
+                </div>
+            `;
+            
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('customerModal').style.display = 'none';
+        }
+
+        // 모달 외부 클릭시 닫기
+        window.onclick = function(event) {
+            const modal = document.getElementById('customerModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
