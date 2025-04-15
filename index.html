@@ -421,7 +421,7 @@
 
     <script>
         const CORRECT_PASSWORD = 'aplcolor1!';
-        const API_BASE_URL = 'http://10.0.0.112:8503';
+        const API_BASE_URL = 'http://10.0.0.112:8503';  // 백엔드 배포 후 이 주소를 수정해주세요
         
         // 비밀번호 체크 함수
         function checkPassword() {
@@ -488,27 +488,39 @@
                              .find(button => button.classList.contains('active'))
                              ?.textContent.replace('전체', '') || '';
             
+            const requestData = {
+                date: date,
+                staff: staff
+            };
+            console.log('Sending request:', requestData);
+            
             try {
-                const response = await fetch('/get_customer_info', {
+                const response = await fetch(`${API_BASE_URL}/get_customer_info`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Accept': 'application/json'
                     },
-                    body: JSON.stringify({
-                        date: date,
-                        staff: staff
-                    })
+                    body: JSON.stringify(requestData)
                 });
 
+                console.log('Response status:', response.status);
+                console.log('Response headers:', response.headers);
+
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    const errorText = await response.text();
+                    console.error('Error response:', errorText);
+                    throw new Error(`Network response was not ok: ${response.status} ${errorText}`);
                 }
 
                 const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
                 displayCustomerList(data, date);
             } catch (error) {
-                console.error('Error:', error);
-                alert('데이터를 불러오는 중 오류가 발생했습니다.');
+                console.error('Error details:', error);
+                alert('데이터를 불러오는 중 오류가 발생했습니다: ' + error.message);
             }
         }
 
@@ -539,7 +551,26 @@
             });
         }
 
-        function showCustomerInfo(customer, date) {
+        async function showCustomerInfo(customer, date) {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/customer/${customer.id}`);
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const customerData = await response.json();
+                if (customerData.error) {
+                    throw new Error(customerData.error);
+                }
+
+                displayCustomerDetail(customerData, date);
+            } catch (error) {
+                console.error('Error:', error);
+                alert('고객 정보를 불러오는 중 오류가 발생했습니다.');
+            }
+        }
+
+        function displayCustomerDetail(customer, date) {
             const modal = document.getElementById('customerModal');
             const customerDetail = document.getElementById('customerDetail');
             
