@@ -391,7 +391,7 @@
                         </button>
                         <button class="staff-button" onclick="setDateToday()">오늘</button>  <!-- "오늘" 버튼 추가 -->
                     </div>
-                   
+
                     <label>담당자:</label>
                     <div class="staff-buttons">
                         <button class="staff-button active" onclick="selectStaff('')">전체</button>
@@ -401,6 +401,7 @@
                     </div>
                 </div>
             </div>
+
             <div id="customerList" class="customer-list">
                 <div class="list-title">
                     <i class="fas fa-list"></i> 예약 고객 목록
@@ -421,7 +422,7 @@
 
     <script>
         const CORRECT_PASSWORD = 'aplcolor1!';
-        const API_BASE_URL = 'https://cust-info-check.apls.kr';  // Cloudflare 터널 주소로 변경
+        const API_BASE_URL = '';  // Cloudflare 터널 주소로 변경
 
         // 비밀번호 체크 함수
         function checkPassword() {
@@ -492,7 +493,7 @@
                 date: date,
                 staff: staff
             };
-            const url = `${API_BASE_URL}/get_customer_info`;
+            const url = `/get_customer_info`;
             const method = 'POST';
             const headers = {
                 'Content-Type': 'application/json',
@@ -570,7 +571,7 @@
 
         async function showCustomerInfo(customer, date) {
             try {
-                const response = await fetch(`${API_BASE_URL}/api/customer/${customer.id}`);
+                const response = await fetch(`/api/customer/${customer.id}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
