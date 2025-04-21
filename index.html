@@ -486,7 +486,7 @@
             fetchCustomerData(staffName);
         }
 
-                // =======================================================================
+        // =======================================================================
         // --- API 데이터 가져오기 ---
         // =======================================================================
         async function fetchCustomerData(staffOverride) {
@@ -514,12 +514,22 @@
             console.log('Headers:', headers);
             console.log('Body:', body);
 
+            // ===================================================================
+            // --- 로그 남기기 (요청 시작) ---
+            // ===================================================================
+            console.log('API 요청 시작:', url); // 요청 시작 로그 추가
+
             try {
                 const response = await fetch(url, {
                     method: method,
                     headers: headers,
                     body: body
                 });
+
+                // ===============================================================
+                // --- 로그 남기기 (응답) ---
+                // ===============================================================
+                console.log('API 응답:', response); // 응답 객체 로그
 
                 console.log('응답 상태 코드:', response.status);
                 console.log('응답 상태 텍스트:', response.statusText);
@@ -559,6 +569,37 @@
                 alert('데이터를 불러오는 중 오류가 발생했습니다: ' + error.message);
             }
         }
+
+        // =======================================================================
+        // --- 고객 목록 표시 ---
+        // =======================================================================
+        function displayCustomerList(customers, date) {
+            const customerList = document.getElementById('customerList');
+            customerList.innerHTML = '<div class="list-title"><i class="fas fa-list"></i> 예약 고객 목록</div>';
+
+            if (customers.length === 0) {
+                customerList.innerHTML += '<p style="text-align: center; color: #666;">예약된 고객이 없습니다.</p>';
+                return;
+            }
+
+            customers.forEach(customer => {
+                const customerElement = document.createElement('div');
+                customerElement.className = 'time-slot';
+                customerElement.onclick = () => showCustomerInfo(customer, date);
+                customerElement.innerHTML = `
+                    <div class="time-info">
+                        <strong>${customer.reservation_time}</strong>
+                        <span>${customer.customer_name}</span>
+                    </div>
+                    <div class="service-info">
+                        <span class="service-name">${customer.service_name}</span>
+                        <span class="staff-name">${customer.staff}</span>
+                    </div>
+                `;
+                customerList.appendChild(customerElement);
+            });
+        }
+
         // =======================================================================
         // --- 고객 상세 정보 표시 ---
         // =======================================================================
