@@ -434,8 +434,7 @@
         // --- 설정 ---
         // =======================================================================
         const CORRECT_PASSWORD = 'aplcolor1!';
-        const API_BASE_URL = ''; // Cloudflare 터널 주소로 변경
-
+        const API_BASE_URL = 'https://cust-info-check.apls.kr';
         // =======================================================================
         // --- 로그인 관련 함수 ---
         // =======================================================================
@@ -500,7 +499,7 @@
                 date: date,
                 staff: staff
             };
-            const url = `/get_customer_info`;
+            const url = `${API_BASE_URL}/get_customer_info`;
             const method = 'POST';
             const headers = {
                 'Content-Type': 'application/json',
