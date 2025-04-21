@@ -599,7 +599,8 @@
         // =======================================================================
         async function showCustomerInfo(customer, date) {
             try {
-                const response = await fetch(`/api/customer/${customer.id}`);
+                const API_BASE_URL = 'https://cust-info-check.apls.kr';  // 이미 선언되어 있다면 재사용
+                const response = await fetch(`${API_BASE_URL}/api/customer/${customer.id}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
