@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +29,7 @@
             color: white;
             padding: 20px 0;
             margin-bottom: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .header-content {
@@ -61,7 +62,7 @@
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
             display: flex;
             gap: 20px;
@@ -141,7 +142,7 @@
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .list-title {
@@ -212,7 +213,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(0, 0, 0, 0.5);
             overflow-y: auto;
         }
 
@@ -287,7 +288,7 @@
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             width: 90%;
             max-width: 400px;
             text-align: center;
@@ -338,7 +339,7 @@
             .container {
                 padding: 10px;
             }
-            
+
             .search-section {
                 flex-direction: column;
                 align-items: stretch;
@@ -356,6 +357,7 @@
         }
     </style>
 </head>
+
 <body>
     <div id="loginScreen" class="login-container">
         <div class="login-box">
@@ -389,7 +391,8 @@
                         <button class="nav-button" onclick="moveDate(1)">
                             <i class="fas fa-chevron-right"></i>
                         </button>
-                        <button class="staff-button" onclick="setDateToday()">오늘</button>  <!-- "오늘" 버튼 추가 -->
+                        <button class="staff-button" onclick="setDateToday()">오늘</button>
+                        <!-- "오늘" 버튼 추가 -->
                     </div>
 
                     <label>담당자:</label>
@@ -422,7 +425,7 @@
 
     <script>
         const CORRECT_PASSWORD = 'aplcolor1!';
-        const API_BASE_URL = '';  // Cloudflare 터널 주소로 변경
+        const API_BASE_URL = ''; // Cloudflare 터널 주소로 변경
 
         // 비밀번호 체크 함수
         function checkPassword() {
@@ -445,14 +448,14 @@
         }
 
         // Enter 키로 로그인
-        document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+        document.getElementById('passwordInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 checkPassword();
             }
         });
 
         // 기존 DOMContentLoaded 이벤트 수정
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // 페이지 로드 시 비밀번호 입력 필드에 포커스
             document.getElementById('passwordInput').focus();
         });
@@ -486,8 +489,8 @@
             const date = document.getElementById('date').value;
             const staff = staffOverride !== undefined ? staffOverride :
                 Array.from(document.querySelectorAll('.staff-button'))
-                    .find(button => button.classList.contains('active'))
-                    ?.textContent.replace('전체', '') || '';
+                .find(button => button.classList.contains('active'))
+                ?.textContent.replace('전체', '') || '';
 
             const requestData = {
                 date: date,
@@ -517,19 +520,25 @@
                 console.log('응답 상태 코드:', response.status);
                 console.log('응답 상태 텍스트:', response.statusText);
 
+                if (!response.ok) {
+                    console.error('API 요청 실패:', response.status, response.statusText);
+                    let errorData;
+                    try {
+                        errorData = await response.json();
+                    } catch (jsonError) {
+                        errorData = await response.text();
+                    }
+                    console.error('응답 내용:', errorData);
+                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+                }
+
                 let responseData;
                 try {
                     responseData = await response.json();
                     console.log('응답 내용 (JSON):', responseData);
                 } catch (jsonError) {
-                    responseData = await response.text();
-                    console.log('응답 내용 (텍스트):', responseData);
-                }
-
-                if (!response.ok) {
-                    console.error('API 요청 실패:', response.status, response.statusText);
-                    console.error('응답 내용:', responseData);
-                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+                    console.error('JSON 파싱 오류:', jsonError);
+                    throw new Error('JSON 파싱 오류: ' + jsonError.message);
                 }
 
                 if (responseData.error) {
@@ -682,7 +691,7 @@
         }
 
         // 모달 외부 클릭시 닫기
-        window.onclick = function(event) {
+        window.onclick = function (event) {
             const modal = document.getElementById('customerModal');
             if (event.target == modal) {
                 modal.style.display = 'none';
@@ -698,4 +707,5 @@
         }
     </script>
 </body>
+
 </html>
