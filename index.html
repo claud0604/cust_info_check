@@ -486,7 +486,7 @@
             fetchCustomerData(staffName);
         }
 
-        // =======================================================================
+                // =======================================================================
         // --- API 데이터 가져오기 ---
         // =======================================================================
         async function fetchCustomerData(staffOverride) {
@@ -559,37 +559,6 @@
                 alert('데이터를 불러오는 중 오류가 발생했습니다: ' + error.message);
             }
         }
-
-        // =======================================================================
-        // --- 고객 목록 표시 ---
-        // =======================================================================
-        function displayCustomerList(customers, date) {
-            const customerList = document.getElementById('customerList');
-            customerList.innerHTML = '<div class="list-title"><i class="fas fa-list"></i> 예약 고객 목록</div>';
-
-            if (customers.length === 0) {
-                customerList.innerHTML += '<p style="text-align: center; color: #666;">예약된 고객이 없습니다.</p>';
-                return;
-            }
-
-            customers.forEach(customer => {
-                const customerElement = document.createElement('div');
-                customerElement.className = 'time-slot';
-                customerElement.onclick = () => showCustomerInfo(customer, date);
-                customerElement.innerHTML = `
-                    <div class="time-info">
-                        <strong>${customer.reservation_time}</strong>
-                        <span>${customer.customer_name}</span>
-                    </div>
-                    <div class="service-info">
-                        <span class="service-name">${customer.service_name}</span>
-                        <span class="staff-name">${customer.staff}</span>
-                    </div>
-                `;
-                customerList.appendChild(customerElement);
-            });
-        }
-
         // =======================================================================
         // --- 고객 상세 정보 표시 ---
         // =======================================================================
