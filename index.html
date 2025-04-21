@@ -537,13 +537,8 @@
                 // 응답이 성공적인지 확인
                 if (!response.ok) {
                     console.error('API 요청 실패:', response.status, response.statusText);
-                    let errorData;
-                    try {
-                        errorData = await response.json(); // JSON으로 파싱 시도
-                    } catch (jsonError) {
-                        errorData = await response.text(); // JSON 파싱 실패 시 텍스트로 받기
-                    }
-                    console.error('응답 내용:', errorData);
+                    let errorText = await response.text();
+                console.error('응답 내용:', errorText);
                     throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
                 }
 
