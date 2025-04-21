@@ -359,6 +359,7 @@
 </head>
 
 <body>
+    <!-- 로그인 화면 섹션 -->
     <div id="loginScreen" class="login-container">
         <div class="login-box">
             <h2>APL COLOR</h2>
@@ -369,6 +370,7 @@
         </div>
     </div>
 
+    <!-- 메인 콘텐츠 섹션 -->
     <div id="mainContent" class="main-content">
         <div class="header">
             <div class="header-content">
@@ -380,6 +382,7 @@
         </div>
 
         <div class="container">
+            <!-- 검색 섹션 -->
             <div class="search-section">
                 <div class="search-group">
                     <label for="date">날짜:</label>
@@ -405,6 +408,7 @@
                 </div>
             </div>
 
+            <!-- 고객 목록 섹션 -->
             <div id="customerList" class="customer-list">
                 <div class="list-title">
                     <i class="fas fa-list"></i> 예약 고객 목록
@@ -413,6 +417,7 @@
             </div>
         </div>
 
+        <!-- 고객 상세 정보 모달 섹션 -->
         <div id="customerModal" class="modal">
             <div class="modal-content">
                 <span class="close" onclick="closeModal()">×</span>
@@ -423,11 +428,17 @@
         </div>
     </div>
 
+    <!-- JavaScript 섹션 -->
     <script>
+        // =======================================================================
+        // --- 설정 ---
+        // =======================================================================
         const CORRECT_PASSWORD = 'aplcolor1!';
         const API_BASE_URL = ''; // Cloudflare 터널 주소로 변경
 
-        // 비밀번호 체크 함수
+        // =======================================================================
+        // --- 로그인 관련 함수 ---
+        // =======================================================================
         function checkPassword() {
             const password = document.getElementById('passwordInput').value;
             const loginScreen = document.getElementById('loginScreen');
@@ -447,19 +458,9 @@
             }
         }
 
-        // Enter 키로 로그인
-        document.getElementById('passwordInput').addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                checkPassword();
-            }
-        });
-
-        // 기존 DOMContentLoaded 이벤트 수정
-        document.addEventListener('DOMContentLoaded', function () {
-            // 페이지 로드 시 비밀번호 입력 필드에 포커스
-            document.getElementById('passwordInput').focus();
-        });
-
+        // =======================================================================
+        // --- 날짜 및 담당자 선택 관련 함수 ---
+        // =======================================================================
         function moveDate(days) {
             const dateInput = document.getElementById('date');
             const currentDate = new Date(dateInput.value);
@@ -485,6 +486,9 @@
             fetchCustomerData(staffName);
         }
 
+        // =======================================================================
+        // --- API 데이터 가져오기 ---
+        // =======================================================================
         async function fetchCustomerData(staffOverride) {
             const date = document.getElementById('date').value;
             const staff = staffOverride !== undefined ? staffOverride :
@@ -520,18 +524,20 @@
                 console.log('응답 상태 코드:', response.status);
                 console.log('응답 상태 텍스트:', response.statusText);
 
+                // 응답이 성공적인지 확인
                 if (!response.ok) {
                     console.error('API 요청 실패:', response.status, response.statusText);
                     let errorData;
                     try {
-                        errorData = await response.json();
+                        errorData = await response.json(); // JSON으로 파싱 시도
                     } catch (jsonError) {
-                        errorData = await response.text();
+                        errorData = await response.text(); // JSON 파싱 실패 시 텍스트로 받기
                     }
                     console.error('응답 내용:', errorData);
-                    throw new Error(`Network response was not ok: ${response.status} ${response.statusText}`);
+                    throw new Error(`API 요청 실패: ${response.status} ${response.statusText}`);
                 }
 
+                // JSON 데이터 파싱
                 let responseData;
                 try {
                     responseData = await response.json();
@@ -541,16 +547,22 @@
                     throw new Error('JSON 파싱 오류: ' + jsonError.message);
                 }
 
+                // 오류 메시지 처리
                 if (responseData.error) {
                     throw new Error(responseData.error);
                 }
+
                 displayCustomerList(responseData, date);
+
             } catch (error) {
                 console.error('API 요청 중 오류 발생:', error);
                 alert('데이터를 불러오는 중 오류가 발생했습니다: ' + error.message);
             }
         }
 
+        // =======================================================================
+        // --- 고객 목록 표시 ---
+        // =======================================================================
         function displayCustomerList(customers, date) {
             const customerList = document.getElementById('customerList');
             customerList.innerHTML = '<div class="list-title"><i class="fas fa-list"></i> 예약 고객 목록</div>';
@@ -578,6 +590,9 @@
             });
         }
 
+        // =======================================================================
+        // --- 고객 상세 정보 표시 ---
+        // =======================================================================
         async function showCustomerInfo(customer, date) {
             try {
                 const response = await fetch(`/api/customer/${customer.id}`);
@@ -686,6 +701,9 @@
             modal.style.display = 'block';
         }
 
+        // =======================================================================
+        // --- 모달 닫기 ---
+        // =======================================================================
         function closeModal() {
             document.getElementById('customerModal').style.display = 'none';
         }
@@ -698,13 +716,30 @@
             }
         }
 
-        // "오늘" 버튼 클릭 시 실행되는 함수
+        // =======================================================================
+        // --- "오늘" 버튼 클릭 시 ---
+        // =======================================================================
         function setDateToday() {
             const dateInput = document.getElementById('date');
             const today = new Date().toISOString().split('T')[0];
             dateInput.value = today;
             fetchCustomerData(); // 오늘 날짜로 데이터 불러오기
         }
+
+        // =======================================================================
+        // --- 초기 설정 ---
+        // =======================================================================
+        document.addEventListener('DOMContentLoaded', function () {
+            // 페이지 로드 시 비밀번호 입력 필드에 포커스
+            document.getElementById('passwordInput').focus();
+        });
+
+        // Enter 키로 로그인
+        document.getElementById('passwordInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                checkPassword();
+            }
+        });
     </script>
 </body>
 
